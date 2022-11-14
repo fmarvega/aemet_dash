@@ -7,6 +7,7 @@ from dash import Dash, dcc, html, Input, Output
 import dash_bootstrap_components as dbc
 from dash_bootstrap_templates import load_figure_template
 import locale
+from functions import update_df
 
 locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8') # Setting local time format to spanish
 
@@ -14,10 +15,13 @@ load_figure_template('SUPERHERO')
 
 df_clim_1 = pd.read_pickle('data/df_clim_1.pkl')
 df_clim_2 = pd.read_pickle('data/df_clim_2.pkl')
+df_estaciones = pd.read_pickle('data/df_estaciones_selection.pkl')
+
 df_clim = pd.concat([df_clim_1, df_clim_2], sort=False)
 
+df_clim = update_df(df_clim, df_estaciones)
+
 df_clim['amplitud_termica'] = df_clim['tmax']-df_clim['tmin']
-df_estaciones = pd.read_pickle('data/df_estaciones_selection.pkl')
 
 degree_sign = u'\N{DEGREE SIGN}'
 mapbox_access_token = "pk.eyJ1IjoicGFuY2lxdWUiLCJhIjoiY2w5ZTNnbWQyMGF1aTN2cGI4ZHIxcTZ0dCJ9.PwSiTH8rn9eRYk0FbVLi8w"

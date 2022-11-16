@@ -31,7 +31,7 @@ mapbox_style = "mapbox://styles/pancique/clacuhyf5003514nsklotaxcl"
 fig_map = px.scatter_mapbox(df_estaciones,
                             lat='latitud',
                             lon='longitud',
-                            custom_data=['nombre', 'altitud'],
+                            custom_data=['nombre', 'altitud', 'provincia'],
                             hover_name="nombre",
                             hover_data={'altitud': True, 'latitud': False, 'longitud': False},
                             # color_discrete_sequence=['#521f14'],
@@ -56,9 +56,9 @@ fig_map.update_traces(hovertemplate='%{customdata[0]} <br>Altitud: %{customdata[
 card_map = dbc.Card(
             dbc.CardBody(
                 [
-                    html.Div([html.P(['Estaciones de la ',
+                    html.Div([html.P(['Selecciona una estación de la ',
                                       html.A('AEMET', href="https://www.aemet.es/", target='blank'),
-                                      '. Selecciona una estación en el mapa']),
+                                      ' sobre el mapa']),
                               dcc.Graph(id='map',
                                         clickData={'points': [{'customdata': 'MADRID, RETIRO'}]},
                                         figure=fig_map,
@@ -214,13 +214,16 @@ app.layout = html.Div([
         [
             dbc.Col(html.Div(
                 [
-                    dbc.Row(html.H1('Datos climatológicos España', className="mt-3 m-2", style={'text-align':'center'})),
+                    dbc.Row(html.H1('Datos climatológicos AEMET', className="my-4", style={'text-align':'center'})),
                 ]
             ), width=4
             ),
 
             dbc.Col(html.Div([
-                dbc.Row(html.H3('MADRID, RETIRO', id='nom_est', className="mt-3 m-2")),
+                dbc.Row([dbc.Col(html.H3('MADRID, RETIRO', id='nom_est', className="mt-3")),
+                         dbc.Row([dbc.Col(html.H6('Provincia: MADRID', id='provincia_est'), width=3),
+                         dbc.Col(html.H6('Altitud: 667 m', id='altitud_est'))])
+                         ]),
                 dbc.RadioItems(options=[
                     {'label':'Enero', 'value':1},
                     {'label':'Febrero', 'value':2},
@@ -256,11 +259,15 @@ app.layout = html.Div([
 ])
 
 @app.callback(Output('nom_est', 'children'),
+              Output('provincia_est', 'children'),
+              Output('altitud_est', 'children'),
               Input('map', 'clickData'),
               prevent_initial_call=True)
 def update_name(clickData):
     nombre = clickData['points'][0]['customdata'][0]
-    return nombre
+    altitud = 'Altitud: {} m'.format(clickData['points'][0]['customdata'][1])
+    provincia = 'Provincia: {}'.format(clickData['points'][0]['customdata'][2])
+    return (nombre, provincia, altitud)
 
 @app.callback(Output('desde_max', 'children'),
               Output('desde_min', 'children'),
@@ -404,18 +411,35 @@ def extract_tmax(nombre, year):
     heat_anom = np.empty((12, 31))
     heat_anom[:] = np.nan
 
+    heat_max = np.empty((12, 31))
+    heat_max[:] = np.nan
+
+    heat_min = np.empty((12, 31))
+    heat_min[:] = np.nan
+
     df_med = df_aux.groupby('fecha').agg({'tmed': np.mean})
     df_med = pd.pivot_table(df_med, values='tmed', index=df_med.index.month, columns=df_med.index.day)
 
     df_aux = df_aux[df_aux['fecha'].dt.year.isin([year])]
     df_aux['month'] = df_aux['fecha'].dt.month
     df_aux['day'] = df_aux['fecha'].dt.day
-    df_aux = df_aux[['month', 'day', 'tmed']]
+    df_aux = df_aux[['month', 'day', 'tmed', 'tmax', 'tmin']]
     df_heat = pd.pivot_table(df_aux, values='tmed', index='month', columns='day')
 
     shape_mat = df_heat.to_numpy().shape
     months = (df_heat.index.to_numpy() - 1).tolist()
     heat_anom[:shape_mat[0],:shape_mat[1]] = df_heat.to_numpy()-df_med.to_numpy()[months,:]
+
+    df_max = pd.pivot_table(df_aux, values='tmax', index='month', columns='day')
+    df_min = pd.pivot_table(df_aux, values='tmin', index='month', columns='day')
+
+    heat_max[:shape_mat[0], :shape_mat[1]] = df_max.to_numpy()
+    heat_min[:shape_mat[0], :shape_mat[1]] = df_min.to_numpy()
+
+    customdata=[]
+    customdata.append(heat_anom + df_med.to_numpy())
+    customdata.append(heat_max)
+    customdata.append(heat_min)
 
     fig = px.imshow(heat_anom, color_continuous_scale='RdBu_r',
                     zmin=-15, zmax=15, text_auto='.1f', aspect='auto')
@@ -424,6 +448,11 @@ def extract_tmax(nombre, year):
                       texttemplate='%{text}')
     fig.update_traces(hoverongaps=False)
     fig.update_yaxes(range=[0, 11])
+    fig.update(data=[{'customdata': np.dstack((customdata[0],customdata[1],customdata[2])),
+                      'hovertemplate':'%{x} de %{y}<br>Anomalía: %{z:.2f}\u00b0C<br>Temperatura media: %{customdata[0]:.1f}\u00b0C<br>Temperatura máxima: %{customdata[1]:.1f}\u00b0C<br>Temperatura mínima: %{customdata[2]:.1f}\u00b0C'}])
+    # fig.update_traces(customdata=customdata,
+    #                   hoverinfo='all',
+    #                   hovertemplate='%{x} de %{y}<br>Anomalía: %{z:.2f}ºC<br>Temperatura media: %{customdata[0]}')
     fig.update_layout(
         margin={'b': 10, 'l': 0, 'r': 40, 't': 40},
         paper_bgcolor='rgba(0,0,0,0)',

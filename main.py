@@ -1,4 +1,11 @@
 # Dash bootstrap cheatsheet: https://dashcheatsheet.pythonanywhere.com/
+import os
+# Install es_ES
+!/usr/share/locales/install-language-pack es_ES
+!dpkg-reconfigure locales
+
+# Restart Python process to pick up the new locales
+os.kill(os.getpid(), 9)
 
 import pandas as pd
 import numpy as np
@@ -9,7 +16,7 @@ from dash_bootstrap_templates import load_figure_template
 import locale
 from functions import update_df
 
-locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8') # Setting local time format to spanish
+locale.setlocale(locale.LC_TIME, 'es_ES.ISO-8859-1') # Setting local time format to spanish
 
 load_figure_template('SUPERHERO')
 

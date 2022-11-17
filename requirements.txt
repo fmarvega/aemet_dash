@@ -2,7 +2,7 @@ dash==2.6.2
 dash-bootstrap-components==1.2.1
 dash-bootstrap-templates==1.0.7
 gunicorn
-numpy==1.23.3
-pandas==1.4.4
+numpy
+pandas
 plotly==5.9.0
 requests

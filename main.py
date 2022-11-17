@@ -209,6 +209,8 @@ cards = dbc.CardGroup(
 # external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.SLATE]) #, prevent_initial_callbacks=True)
+server = app.server
+
 app.layout = html.Div([
     dbc.Row(
         [

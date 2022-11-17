@@ -9,7 +9,7 @@ from dash_bootstrap_templates import load_figure_template
 import locale
 from functions import update_df
 
-locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8') # Setting local time format to spanish
+# locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8') # Setting local time format to spanish
 
 load_figure_template('SUPERHERO')
 

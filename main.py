@@ -1,11 +1,4 @@
 # Dash bootstrap cheatsheet: https://dashcheatsheet.pythonanywhere.com/
-import os
-# Install es_ES
-!/usr/share/locales/install-language-pack es_ES
-!dpkg-reconfigure locales
-
-# Restart Python process to pick up the new locales
-os.kill(os.getpid(), 9)
 
 import pandas as pd
 import numpy as np
@@ -13,24 +6,26 @@ import plotly.express as px
 from dash import Dash, dcc, html, Input, Output
 import dash_bootstrap_components as dbc
 from dash_bootstrap_templates import load_figure_template
-import locale
+# import locale
 from functions import update_df
 
-locale.setlocale(locale.LC_TIME, 'es_ES.ISO-8859-1') # Setting local time format to spanish
+# locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8') # Setting local time format to spanish
 
 load_figure_template('SUPERHERO')
 
-df_clim_1 = pd.read_pickle('data/df_clim_1.pkl')
-df_clim_2 = pd.read_pickle('data/df_clim_2.pkl')
-df_estaciones = pd.read_pickle('data/df_estaciones_selection.pkl')
+df_clim_1 = pd.read_csv('data/df_clim_1.csv')
+df_clim_2 = pd.read_csv('data/df_clim_2.csv')
+df_estaciones = pd.read_csv('data/df_estaciones.csv')
 
 df_clim = pd.concat([df_clim_1, df_clim_2], sort=False)
-
+df_clim['fecha'] = pd.to_datetime(df_clim['fecha'])
 df_clim = update_df(df_clim, df_estaciones)
 
 df_clim['amplitud_termica'] = df_clim['tmax']-df_clim['tmin']
 
 degree_sign = u'\N{DEGREE SIGN}'
+month_list = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre']
+
 mapbox_access_token = "pk.eyJ1IjoicGFuY2lxdWUiLCJhIjoiY2w5ZTNnbWQyMGF1aTN2cGI4ZHIxcTZ0dCJ9.PwSiTH8rn9eRYk0FbVLi8w"
 mapbox_style = "mapbox://styles/pancique/clacuhyf5003514nsklotaxcl"
 # Creating map
@@ -318,9 +313,9 @@ def extract_tmax(nombre, tab, month):
         df_aux = df_aux.sort_values(by=['tmax', 'fecha'], ascending=[True, False]).head(5).reset_index()
     result = []
     for i in range(5):
-        fecha = df_aux.loc[i].fecha.strftime('%Y, %d %B')
-        temperature = df_aux.loc[i].tmax
-        result.append(fecha)
+        fecha = df_aux.iloc[i].fecha
+        result.append('{}, {} {}'.format(fecha.year, fecha.day, month_list[fecha.month-1]))
+        temperature = df_aux.iloc[i].tmax
         result.append('{}'.format(temperature) + degree_sign + 'C')
     return tuple(result)
 
@@ -348,9 +343,9 @@ def extract_tmin(nombre, tab, month):
         df_aux = df_aux.sort_values(by=['tmin', 'fecha'], ascending=[False, False]).head(5).reset_index()
     result = []
     for i in range(5):
-        fecha = df_aux.loc[i].fecha.strftime('%Y, %d %B')
-        temperature = df_aux.loc[i].tmin
-        result.append(fecha)
+        fecha = df_aux.iloc[i].fecha
+        result.append('{}, {} {}'.format(fecha.year, fecha.day, month_list[fecha.month - 1]))
+        temperature = df_aux.iloc[i].tmin
         result.append('{}'.format(temperature) + degree_sign + 'C')
     return tuple(result)
 
@@ -378,9 +373,9 @@ def extract_amp(nombre, tab, month):
         df_aux = df_aux.sort_values(by=['amplitud_termica', 'fecha'], ascending=[True, False]).head(5).reset_index()
     result = []
     for i in range(5):
-        fecha = df_aux.loc[i].fecha.strftime('%Y, %d %B')
-        temperature = df_aux.loc[i].amplitud_termica
-        result.append(fecha)
+        fecha = df_aux.iloc[i].fecha
+        result.append('{}, {} {}'.format(fecha.year, fecha.day, month_list[fecha.month - 1]))
+        temperature = df_aux.iloc[i].amplitud_termica
         result.append('{:.1f}'.format(temperature) + degree_sign + 'C')
     return tuple(result)
 
@@ -404,9 +399,9 @@ def extract_prec(nombre, month):
     df_aux = df_aux.sort_values(by=['prec', 'fecha'], ascending=[False, False]).head(5).reset_index()
     result = []
     for i in range(5):
-        fecha = df_aux.loc[i].fecha.strftime('%Y, %d %B')
-        prec = df_aux.loc[i].prec
-        result.append(fecha)
+        fecha = df_aux.iloc[i].fecha
+        result.append('{}, {} {}'.format(fecha.year, fecha.day, month_list[fecha.month - 1]))
+        prec = df_aux.iloc[i].prec
         result.append('{}'.format(prec) + ' mm')
     return tuple(result)
 
@@ -414,7 +409,7 @@ def extract_prec(nombre, month):
     Output('graph_anom', 'figure'),
     Input('nom_est', 'children'),
     Input('year_input', 'value'))
-def extract_tmax(nombre, year):
+def plot_anom(nombre, year):
     df_aux = df_clim[df_clim['nombre'] == nombre]
 
     heat_anom = np.empty((12, 31))

@@ -13,9 +13,12 @@ from functions import update_df
 
 load_figure_template('SUPERHERO')
 
-df_clim_1 = pd.read_csv('data/df_clim_1.csv')
-df_clim_2 = pd.read_csv('data/df_clim_2.csv')
-df_estaciones = pd.read_csv('data/df_estaciones.csv')
+# df_clim_1 = pd.read_csv('data/df_clim_1.csv')
+# df_clim_2 = pd.read_csv('data/df_clim_2.csv')
+# df_estaciones = pd.read_csv('data/df_estaciones.csv')
+df_clim_1 = pd.read_csv('https://raw.githubusercontent.com/fmarvega/aemet_dash/master/data/df_clim_1.csv')
+df_clim_2 = pd.read_csv('https://raw.githubusercontent.com/fmarvega/aemet_dash/master/data/df_clim_2.csv')
+df_estaciones = pd.read_csv('https://raw.githubusercontent.com/fmarvega/aemet_dash/master/data/df_estaciones.csv')
 
 df_clim = pd.concat([df_clim_1, df_clim_2], sort=False)
 df_clim['fecha'] = pd.to_datetime(df_clim['fecha'])

@@ -1,10 +1,9 @@
-def update_df(df_clim, df_estaciones):
-    import requests
-    import json
-    import pandas as pd
-    from datetime import date, timedelta
-    import time
+import requests
+import json
+import pandas as pd
+from datetime import date, timedelta
 
+def update_df(df_clim, df_estaciones):
     querystring = {
         "api_key": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmbWFydmVnYUBnbWFpbC5jb20iLCJqdGkiOiI5NmZhNTM1ZC0yYzY1LTRjNDktYWUxYS00YWU4M2UzNjhmNzIiLCJpc3MiOiJBRU1FVCIsImlhdCI6MTYyNjg3MDE1NSwidXNlcklkIjoiOTZmYTUzNWQtMmM2NS00YzQ5LWFlMWEtNGFlODNlMzY4ZjcyIiwicm9sZSI6IiJ9.PC6TWrEaDskCo6G8dJCXlO6CvDqNYKESGj5WGVh5sYI"}
 

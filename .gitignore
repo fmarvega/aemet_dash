@@ -5,3 +5,5 @@ __pycache__/
 .vscode/
 test*
 functions.py
+database.ini
+tokens.py

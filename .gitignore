@@ -1,2 +1,9 @@
 venv/
 __pycache__/
+*.db
+*.csv
+.vscode/
+test*
+functions.py
+database.ini
+tokens.py

@@ -1,5 +1,7 @@
 venv/
 __pycache__/
-test.ipynb
-database.db
+*.db
+*.csv
 .vscode/
+test*
+functions.py

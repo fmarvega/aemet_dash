@@ -1,22 +1,10 @@
 import pandas as pd
-import plotly.express as px
 from dash import Input, Output
-from layouts.constants import month_list, degree_sign
-from layouts.functions import update_df
 from layouts.aux_functions import extract_data, fig_anom
 from data.postgresql.data_fetch import data_fetch
 from data.postgresql.queries import query_estaciones, query_from
 
-# df_clim_1 = pd.read_csv('data/df_clim_1.csv')
-# df_clim_2 = pd.read_csv('data/df_clim_2.csv')
-# df_estaciones = pd.read_csv('data/df_estaciones.csv')
 df_estaciones = pd.DataFrame(data_fetch(query_estaciones()), columns=['latitud', 'provincia', 'altitud', 'indicativo', 'nombre', 'indsinop', 'longitud'])
-
-# df_clim = pd.concat([df_clim_1, df_clim_2], sort=False)
-# df_clim['fecha'] = pd.to_datetime(df_clim['fecha'])
-# df_clim = update_df(df_clim, df_estaciones)
-
-# df_clim['amplitud_termica'] = df_clim['tmax']-df_clim['tmin']
 
 def register_callbacks(app):
     
@@ -38,11 +26,8 @@ def register_callbacks(app):
                 Output('year_input', 'min'),
                 Input('nom_est', 'children'))
     def update_year(nombre):
-        # df_aux = df_clim[df_clim['nombre'] == nombre]
         year_max = data_fetch(query_from(nombre, 'tmax'))[0][0].year
         year_prec = data_fetch(query_from(nombre, 'prec'))[0][0].year
-        # year_max = df_aux[['tmax','fecha']].dropna(subset=['tmax']).sort_values(by='fecha', ascending=True).iloc[0].fecha.year
-        # year_prec = df_aux[['prec','fecha']].dropna(subset=['prec']).sort_values(by='fecha', ascending=True).iloc[0].fecha.year
         return (str(year_max), str(year_max), str(year_max), str(year_prec), year_max)
 
     @app.callback(

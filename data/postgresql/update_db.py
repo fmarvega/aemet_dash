@@ -5,12 +5,13 @@ from datetime import date, timedelta
 from data.postgresql.data_fetch import data_fetch
 from data.postgresql.queries import query_estaciones, query_last
 from sqlalchemy import create_engine
+from layouts.tokens import aemet_api_key, postgresql_url
 
 df_estaciones = pd.DataFrame(data_fetch(query_estaciones()), columns=['latitud', 'provincia', 'altitud', 'indicativo', 'nombre', 'indsinop', 'longitud'])
 
 def new_data():
     querystring = {
-        "api_key": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmbWFydmVnYUBnbWFpbC5jb20iLCJqdGkiOiI5NmZhNTM1ZC0yYzY1LTRjNDktYWUxYS00YWU4M2UzNjhmNzIiLCJpc3MiOiJBRU1FVCIsImlhdCI6MTYyNjg3MDE1NSwidXNlcklkIjoiOTZmYTUzNWQtMmM2NS00YzQ5LWFlMWEtNGFlODNlMzY4ZjcyIiwicm9sZSI6IiJ9.PC6TWrEaDskCo6G8dJCXlO6CvDqNYKESGj5WGVh5sYI"}
+        "api_key": aemet_api_key}
 
     headers = {
         'Accept': "application/json"
@@ -65,7 +66,7 @@ def new_data():
     return df_clim_update
 
 def update_db(df):
-    db = create_engine('postgresql://aemet_user:xTck8etCMuOUVQy7vqrmT5bmKPLYQ0GM@dpg-ce4j5ita49974e9a7iag-a.frankfurt-postgres.render.com/aemet')
+    db = create_engine(postgresql_url)
     conn = db.connect()
     
     for item in df['nombre'].unique():

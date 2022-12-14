@@ -61,15 +61,15 @@ def fig_anom(estacion, year):
     values_df = pd.DataFrame(heat_anom).apply(lambda x: np.round(x,1), axis=1).fillna('x').astype('str')
     fig.update_traces(text=values_df,
                         texttemplate='%{text}')
-    fig.update_traces(hoverongaps=False)
+    fig.update_traces(hoverongaps=False, textfont=dict(size=11))
     fig.update_yaxes(range=[0, 11])
     fig.update(data=[{'customdata': np.dstack((customdata[0],customdata[1],customdata[2])),
                     'hovertemplate':'%{x} de %{y}<br>Anomalía: %{z:.2f}\u00b0C<br>Temperatura media: %{customdata[0]:.1f}\u00b0C<br>Temperatura máxima: %{customdata[1]:.1f}\u00b0C<br>Temperatura mínima: %{customdata[2]:.1f}\u00b0C'}])
 
     fig.update_layout(
         margin={'b': 10, 'l': 0, 'r': 40, 't': 40},
-        paper_bgcolor='rgba(0,0,0,0)',
-        # plot_bgcolor=None,
+        paper_bgcolor='#32383e',
+        plot_bgcolor= '#32383e',
         yaxis=dict(
             tickmode='array',
             ticklen=0,
@@ -91,11 +91,14 @@ def fig_anom(estacion, year):
                 y=-0.2,
                 thickness=20,
                 len=0.4,
-                title='Anomalía térmica (' + degree_sign + 'C)',
+                tickfont=dict(color='white', size=11),
+                title=dict(text='Anomalía térmica (' + degree_sign + 'C)', font=dict(color='white', size=11)),
                 # ticklabelposition = 'inside'
             )
         )
     )
+    fig.update_xaxes(tickfont_color='white', tickfont_size=11)
+    fig.update_yaxes(tickfont_color='white', tickfont_size=11)
     fig.update_xaxes(showgrid=False, zeroline=False)
     fig.update_yaxes(range=[11.5,-0.5], autorange=False, showgrid=False, zeroline=False)
     return fig

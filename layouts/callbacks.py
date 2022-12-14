@@ -99,7 +99,8 @@ def register_callbacks(app):
 
     @app.callback(
         Output('graph_anom', 'figure'),
+        Output('year_input','max'),
         Input('nom_est', 'children'),
         Input('year_input', 'value'))
     def plot_anom(nombre, year):
-        return fig_anom(nombre, year)
+        return (fig_anom(nombre, year), pd.Timestamp.today().year)

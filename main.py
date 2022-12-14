@@ -1,4 +1,3 @@
-# Dash bootstrap cheatsheet: https://dashcheatsheet.pythonanywhere.com/
 from layouts.layout import layout
 from layouts.callbacks import register_callbacks
 from dash import Dash

@@ -1,7 +1,8 @@
 import plotly.express as px
 from layouts.callbacks import df_estaciones
-from layouts.tokens import mapbox_token
+import os
 
+mapbox_token = os.getenv('MAPBOX_TOKEN')
 mapbox_style = "mapbox://styles/pancique/clacuhyf5003514nsklotaxcl"
 # Creating map
 # -----------------------------------------------------------------------------------------------

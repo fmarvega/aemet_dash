@@ -5,11 +5,12 @@ from datetime import date, timedelta
 from data.postgresql.data_fetch import data_fetch
 from data.postgresql.queries import query_estaciones, query_last
 from sqlalchemy import create_engine
-from layouts.tokens import aemet_api_key, postgresql_url
+import os
 
 df_estaciones = pd.DataFrame(data_fetch(query_estaciones()), columns=['latitud', 'provincia', 'altitud', 'indicativo', 'nombre', 'indsinop', 'longitud'])
 
 def new_data():
+    aemet_api_key = os.getenv('AEMET_API_KEY')
     querystring = {
         "api_key": aemet_api_key}
 
@@ -66,6 +67,7 @@ def new_data():
     return df_clim_update
 
 def update_db(df):
+    postgresql_url = os.getenv('POSTGRESQL_URL')
     db = create_engine(postgresql_url)
     conn = db.connect()
     

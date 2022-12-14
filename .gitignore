@@ -7,3 +7,5 @@ test*
 functions.py
 database.ini
 tokens.py
+config.py
+upload_db.py

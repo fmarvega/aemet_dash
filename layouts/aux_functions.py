@@ -29,6 +29,8 @@ def get_anom(estacion, year):
     df_med = pd.DataFrame(data_fetch(query_tmed(estacion)), columns=['month','day','tmed'])
     df_med = pd.pivot_table(df_med, values='tmed', index='month', columns='day')
 
+    # print(df_med)
+
     df_aux = pd.DataFrame(data_fetch(query_year(estacion, year)), columns=['month', 'day', 'tmed', 'tmax', 'tmin'])
     df_heat = pd.pivot_table(df_aux, values='tmed', index='month', columns='day')
     df_max = pd.pivot_table(df_aux, values='tmax', index='month', columns='day')
@@ -41,7 +43,11 @@ def get_anom(estacion, year):
     shape_mat = df_heat.to_numpy().shape
     months = (df_heat.index.astype(int).to_numpy()-1).tolist()
 
-    heat_anom[:shape_mat[0],:shape_mat[1]] = df_heat.to_numpy()-df_med.to_numpy()[months,:]
+    if len(months) == 1:
+        heat_anom[:shape_mat[0],:shape_mat[1]] = df_heat.to_numpy()-df_med.to_numpy()[months,range(len(df_heat.to_numpy()))]
+    else:
+        heat_anom[:shape_mat[0],:shape_mat[1]] = df_heat.to_numpy()-df_med.to_numpy()[months,:]
+
     heat_med = heat_anom + df_med.to_numpy()
     heat_max[:shape_mat[0], :shape_mat[1]] = df_max.to_numpy()
     heat_min[:shape_mat[0], :shape_mat[1]] = df_min.to_numpy()
